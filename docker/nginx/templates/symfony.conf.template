@@ -1,0 +1,54 @@
+
+upstream php-upstream {
+    server php:9001;
+}
+
+server {
+
+    server_name ${APP_SERVER_NAME};
+    root /var/www/symfony/public;
+
+    listen       80;
+
+    location / {
+        try_files $uri @rewriteapp;
+    }
+
+    location @rewriteapp {
+        rewrite ^(.*)$ /index.php/$1 last;
+    }
+
+    location ~ ^/index\.php(/|$) {
+        fastcgi_read_timeout 300;
+        fastcgi_pass php-upstream;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+        include conf.d/custom_fastcgi_params;
+
+        set $cors 'true';
+
+        if ($cors = 'true') {
+                add_header 'Access-Control-Allow-Origin' "*" always;
+                add_header 'Access-Control-Allow-Credentials' 'true' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+                add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With' always;
+                # required to be able to read Authorization header in frontend
+                #add_header 'Access-Control-Expose-Headers' 'Authorization' always;
+        }
+        if ($request_method = 'OPTIONS') {
+                # Tell client that this pre-flight info is valid for 20 days
+                add_header 'Access-Control-Allow-Origin' "*" always;
+                add_header 'Access-Control-Allow-Credentials' 'true' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+                add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With' always;
+
+                add_header 'Access-Control-Max-Age' 1728000;
+                add_header 'Content-Type' 'text/plain charset=UTF-8';
+                add_header 'Content-Length' 0;
+                return 204;
+        }
+    }
+
+    error_log /dev/stderr;
+    access_log /dev/stdout;
+}

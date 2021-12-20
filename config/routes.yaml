@@ -1,0 +1,14 @@
+index:
+  path: /
+  controller: App\Controller\HealthCheckController::status
+  methods: GET
+
+disc-free-space:
+  path: /disc-free-space
+  controller: App\Controller\HealthCheckController::discFreeSpace
+  methods: GET
+
+memory-usage:
+  path: /memory-usage
+  controller: App\Controller\HealthCheckController::memoryUsage
+  methods: GET

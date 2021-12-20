@@ -1,0 +1,42 @@
+version: "3.7"
+services:
+    postgresqldb:
+        container_name: phc-db
+        hostname: postgresqldb
+        image: postgres:13.5-alpine
+        environment:
+            - POSTGRES_USER=${RDS_USERNAME}
+            - POSTGRES_PASSWORD=${RDS_PASSWORD}
+            - POSTGRES_MULTIPLE_DATABASES=${RDS_DB_NAME}
+            - POSTGRES_HOST_AUTH_METHOD=trust
+        volumes:
+            - ./postgresql/init-scripts:/docker-entrypoint-initdb.d
+        ports:
+            - "5433:5432"
+    php:
+        container_name: phc-php-fpm
+        build: ./php-fpm
+        ports:
+            - "9000:9001"
+        volumes:
+            - ../:/var/www/symfony:cached
+            - /tmp:/var/www/symfony/var/log:cached
+        depends_on:
+            - postgresqldb
+        env_file:
+            - .env
+    nginx:
+        container_name: phc-nginx-server
+        image: nginx:latest
+        ports:
+            - "80:80"
+            - "443:443"
+        depends_on:
+            - php
+        volumes:
+            - ./logs/nginx:/var/log/nginx:cached
+            - ../:/var/www/symfony:cached
+            - ./nginx/config/nginx.conf:/etc/nginx/nginx.conf
+            - ./nginx/templates:/etc/nginx/templates
+        env_file:
+            - .env

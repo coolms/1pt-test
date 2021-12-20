@@ -1,0 +1,28 @@
+fastcgi_param SCRIPT_FILENAME           $document_root$fastcgi_script_name;
+fastcgi_param HTTPS                     on;
+
+fastcgi_param APP_ENV                   ${APP_ENV};
+fastcgi_param APP_SECRET                ${APP_SECRET};
+
+### SECURITY
+fastcgi_param APP_HASH_ALGO             ${APP_HASH_ALGO};
+fastcgi_param APP_ACCESS_TOKEN_TTL      ${APP_ACCESS_TOKEN_TTL};
+fastcgi_param APP_REFRESH_TOKEN_TTL     ${APP_REFRESH_TOKEN_TTL};
+
+### API DOC
+fastcgi_param API_ENDPOINT_DOMAIN       ${API_ENDPOINT_DOMAIN};
+fastcgi_param API_HOSTNAME              ${API_HOSTNAME};
+fastcgi_param API_VERSION               ${API_VERSION};
+
+### DATABASE
+fastcgi_param RDS_HOSTNAME              ${RDS_HOSTNAME};
+fastcgi_param RDS_PORT                  ${RDS_PORT};
+fastcgi_param RDS_USERNAME              ${RDS_USERNAME};
+fastcgi_param RDS_PASSWORD              ${RDS_PASSWORD};
+fastcgi_param RDS_DB_NAME               ${RDS_DB_NAME};
+fastcgi_param RDS_SERVER_VERSION        ${RDS_SERVER_VERSION};
+
+### AWS
+fastcgi_param AWS_ACCESS_KEY_ID         "${AWS_ACCESS_KEY_ID}";
+fastcgi_param AWS_BASE_URL              ${AWS_BASE_URL};
+fastcgi_param AWS_SECRET_ACCESS_KEY     "${AWS_SECRET_ACCESS_KEY}";
