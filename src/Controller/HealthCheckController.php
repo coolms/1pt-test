@@ -34,22 +34,15 @@ class HealthCheckController extends AbstractController
      *   response=200,
      *   description="OK",
      *   @OA\JsonContent(
-     *       @OA\Property(property="status", type="string", default="ok"),
-     *       @OA\Property(property="freeDiscSpace", type="integer"),
-     *       @OA\Property(property="memoryUsage", type="integer"),
-     *       @OA\Property(property="memoryAllowed", type="integer")
+     *       @OA\Property(property="freeDiscSpace", type="boolean"),
+     *       @OA\Property(property="memoryUsage", type="boolean")
      *   )
      * ),
      * @OA\Tag(name="HealthCheck")
      */
     public function status(): JsonResponse
     {
-        return new JsonResponse([
-            'status' => 'ok',
-            'freeDiscSpace' => $this->healthCheckService->getDiskFreeSpace(),
-            'memoryUsage'   => $this->healthCheckService->getMemoryUsage(),
-            'memoryAllowed' => $this->healthCheckService->getMemoryUsage(true)
-        ]);
+        return new JsonResponse($this->healthCheckService->getHealthCheckItems());
     }
 
     /**
