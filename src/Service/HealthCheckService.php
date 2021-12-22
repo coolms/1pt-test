@@ -5,22 +5,50 @@ namespace App\Service;
 
 class HealthCheckService extends AbstractService
 {
+    private array $healthCheckItems = [];
 
-    /**
-     * @return string
-     */
-    public function getDiskFreeSpace(): string
+    public function setHealthCheckItems(HealthCheckItemInterface ...$healthCheckItems): void
     {
-        return disk_free_space('/');
+        foreach ($healthCheckItems as $healthCheckItem) {
+            $this->addHealthCheckItem($healthCheckItem);
+        }
+    }
+
+    public function addHealthCheckItem(HealthCheckItemInterface $healthCheckItem): void
+    {
+        $this->healthCheckItems[$healthCheckItem->getName()] = $healthCheckItem;
+    }
+
+    public function getHealthCheckItem(string $name): ?HealthCheckItemInterface
+    {
+        return $this->healthCheckItems[$name] ?? null;
     }
 
     /**
-     * @param bool $real_usage
-     * @return int
+     * @return array|HealthCheckItemInterface[]
      */
-    public function getMemoryUsage(bool $real_usage = false): int
+    public function getHealthCheckItems(): array
     {
-        return memory_get_usage($real_usage);
+        return $this->healthCheckItems;
+    }
+
+    /**
+     * @deprecated Use HealthCheckItemInterface::getValue() instead
+     * @return bool|float|null
+     */
+    public function getDiskFreeSpace(): bool|float|null
+    {
+        return $this->getHealthCheckItem('freeDiscSpace')?->getValue();
+    }
+
+    /**
+     * @deprecated Use HealthCheckItemInterface::getValue() instead
+     * @param bool $real_usage
+     * @return int|null
+     */
+    public function getMemoryUsage(bool $real_usage = false): ?int
+    {
+        return $this->getHealthCheckItem('memoryUsage')?->getValue($real_usage);
     }
 
 }
